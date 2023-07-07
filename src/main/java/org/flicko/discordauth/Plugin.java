@@ -3,13 +3,12 @@ package org.flicko.discordauth;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.User;
 import github.scarsz.discordsrv.dependencies.jda.api.interactions.components.Button;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.net.InetSocketAddress;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -41,34 +40,26 @@ public final class Plugin extends JavaPlugin implements Listener{
     }
 
     public void removeTrusted(UUID uuid, String ip){
-        if (trusted.get(uuid) == null) {
-            return;
-        } else {
+        if (trusted.get(uuid) != null) {
             trusted.get(uuid).remove(ip);
         }
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
+    public void onPlayerJoin(AsyncPlayerPreLoginEvent event){
         // event.setKickMessage("nop");
-        String d_id = DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(event.getPlayer().getUniqueId());
-        UUID player_id = event.getPlayer().getUniqueId();
-        Player player = event.getPlayer();
+        UUID player_id = event.getUniqueId();
+        String d_id = DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(player_id);
 
         if ( d_id != null) {
 
             //get player ip
 
-            InetSocketAddress addr = player.getAddress();
-            if (addr == null) {
-                player.sendMessage("addr is null");
-                return;
-            }
-            String ip = addr.getAddress().toString().replace("/", "");
+            InetAddress ip_address = event.getAddress();
+            String ip = ip_address.getHostAddress();
 
             if (trusted.get(player_id) != null && trusted.get(player_id).contains(ip)) {
-                player.sendMessage("nice");
-                return;
+                getLogger().log(java.util.logging.Level.INFO, player_id + " trusted");
             } else {
                 User discord = DiscordSRV.getPlugin().getJda().getUserById(d_id);
                 if (discord != null){
@@ -79,11 +70,10 @@ public final class Plugin extends JavaPlugin implements Listener{
                     getLogger().warning("discord is null");
                 }
 
-                player.kickPlayer("You are not trusted, please check your discord for your ip");
+                event.setKickMessage("You are not trusted, check your discord DMs");
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             }
 
-        } else {
-            player.sendMessage("You are not linked to a discord account :: " + d_id);
         }
     }
 
