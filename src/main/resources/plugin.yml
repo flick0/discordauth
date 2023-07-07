@@ -1,0 +1,5 @@
+name: discordauth
+version: '${project.version}'
+main: org.flicko.discordauth.Plugin
+api-version: '1.19'
+depend: [DiscordSRV]
