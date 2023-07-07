@@ -54,7 +54,6 @@ public final class Plugin extends JavaPlugin implements Listener{
         if ( d_id != null) {
 
             //get player ip
-
             InetAddress ip_address = event.getAddress();
             String ip = ip_address.getHostAddress();
 
@@ -77,7 +76,6 @@ public final class Plugin extends JavaPlugin implements Listener{
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
         DiscordSRV.api.unsubscribe(discordsrvListener);
     }
 }
