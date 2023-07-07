@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class Plugin extends JavaPlugin implements Listener{
 
-    HashMap<UUID, ArrayList<String>> trusted = new HashMap<UUID, ArrayList<String >>();
+    HashMap<UUID, ArrayList<String>> trusted = new HashMap<>();
     //HashMap<UUID, String> to_be_trusted = new HashMap<UUID, String>();
 
     private final DiscordSRVListener discordsrvListener = new DiscordSRVListener(this);
@@ -31,7 +31,7 @@ public final class Plugin extends JavaPlugin implements Listener{
     //command
     public void addTrusted(UUID uuid, String ip) {
         if (trusted.get(uuid) == null) {
-            ArrayList<String> ips = new ArrayList<String>();
+            ArrayList<String> ips = new ArrayList<>();
             ips.add(ip);
             trusted.put(uuid, ips);
         } else {
@@ -63,9 +63,7 @@ public final class Plugin extends JavaPlugin implements Listener{
             } else {
                 User discord = DiscordSRV.getPlugin().getJda().getUserById(d_id);
                 if (discord != null){
-                    discord.openPrivateChannel().queue((channel) -> {
-                        channel.sendMessage("click button to set ip as trusted").setActionRow(Button.success("yes", ip)).queue();
-                    });
+                    discord.openPrivateChannel().queue((channel) -> channel.sendMessage("click button to set ip as trusted").setActionRow(Button.success("yes", ip)).queue());
                 } else {
                     getLogger().warning("discord is null");
                 }
